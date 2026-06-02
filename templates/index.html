@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blockchain Proof-of-Work Explorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <i class="fas fa-link"></i>
+                <span>Blockchain PoW</span>
+            </div>
+            <div class="nav-links">
+                <a href="#dashboard" class="nav-link active" onclick="switchTab('dashboard')">Dashboard</a>
+                <a href="#transactions" class="nav-link" onclick="switchTab('transactions')">Transactions</a>
+                <a href="#blocks" class="nav-link" onclick="switchTab('blocks')">Blocks</a>
+                <a href="#wallets" class="nav-link" onclick="switchTab('wallets')">Wallets</a>
+            </div>
+        </nav>
+
+        <div class="content">
+            <div id="dashboard" class="tab-content active">
+                <h1>Blockchain Dashboard</h1>
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <i class="fas fa-cubes"></i>
+                        <div><div class="stat-label">Total Blocks</div><div class="stat-value" id="totalBlocks">0</div></div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-exchange-alt"></i>
+                        <div><div class="stat-label">Transactions</div><div class="stat-value" id="totalTx">0</div></div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-coins"></i>
+                        <div><div class="stat-label">Total Volume</div><div class="stat-value" id="totalVolume">0</div></div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-check-circle"></i>
+                        <div><div class="stat-label">Valid Chain</div><div class="stat-value" id="chainValid">Yes</div></div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
+                    <button class="btn btn-success" onclick="validateChain()">Validate</button>
+                </div>
+            </div>
+
+            <div id="transactions" class="tab-content">
+                <h1>Create Transaction</h1>
+                <div class="form-section">
+                    <div class="form-group">
+                        <label>Sender:</label>
+                        <input type="text" id="sender" placeholder="Alice">
+                    </div>
+                    <div class="form-group">
+                        <label>Recipient:</label>
+                        <input type="text" id="recipient" placeholder="Bob">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount:</label>
+                        <input type="number" id="amount" placeholder="50" min="1">
+                    </div>
+                    <button class="btn btn-primary" onclick="addTransaction()">Add Transaction</button>
+                </div>
+
+                <div class="mining-section">
+                    <h2>Mine Block</h2>
+                    <div class="form-group">
+                        <label>Miner Address:</label>
+                        <input type="text" id="minerAddress" placeholder="Miner1">
+                    </div>
+                    <button class="btn btn-success" onclick="mineBlock()">Mine Block</button>
+                </div>
+
+                <div class="transactions-list">
+                    <h2>Pending Transactions</h2>
+                    <div id="pendingTransactions"></div>
+                </div>
+            </div>
+
+            <div id="blocks" class="tab-content">
+                <h1>Blocks</h1>
+                <div id="blocksContainer" class="blocks-container"></div>
+            </div>
+
+            <div id="wallets" class="tab-content">
+                <h1>Wallets</h1>
+                <div id="walletsContainer" class="wallets-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
