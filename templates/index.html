@@ -1,100 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blockchain Proof-of-Work Explorer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blockchain PoW — Bytonix IT</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet"/>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar">
-            <div class="nav-brand">
-                <i class="fas fa-link"></i>
-                <span>Blockchain PoW</span>
-            </div>
-            <div class="nav-links">
-                <a href="#dashboard" class="nav-link active" onclick="switchTab('dashboard')">Dashboard</a>
-                <a href="#transactions" class="nav-link" onclick="switchTab('transactions')">Transactions</a>
-                <a href="#blocks" class="nav-link" onclick="switchTab('blocks')">Blocks</a>
-                <a href="#wallets" class="nav-link" onclick="switchTab('wallets')">Wallets</a>
-            </div>
-        </nav>
 
-        <div class="content">
-            <div id="dashboard" class="tab-content active">
-                <h1>Blockchain Dashboard</h1>
-                <div class="stats-cards">
-                    <div class="stat-card">
-                        <i class="fas fa-cubes"></i>
-                        <div><div class="stat-label">Total Blocks</div><div class="stat-value" id="totalBlocks">0</div></div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-exchange-alt"></i>
-                        <div><div class="stat-label">Transactions</div><div class="stat-value" id="totalTx">0</div></div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-coins"></i>
-                        <div><div class="stat-label">Total Volume</div><div class="stat-value" id="totalVolume">0</div></div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="fas fa-check-circle"></i>
-                        <div><div class="stat-label">Valid Chain</div><div class="stat-value" id="chainValid">Yes</div></div>
-                    </div>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary" onclick="refreshData()">Refresh</button>
-                    <button class="btn btn-success" onclick="validateChain()">Validate</button>
-                </div>
-            </div>
+<!-- SCANLINE OVERLAY -->
+<div class="scanlines"></div>
+<div class="noise"></div>
 
-            <div id="transactions" class="tab-content">
-                <h1>Create Transaction</h1>
-                <div class="form-section">
-                    <div class="form-group">
-                        <label>Sender:</label>
-                        <input type="text" id="sender" placeholder="Alice">
-                    </div>
-                    <div class="form-group">
-                        <label>Recipient:</label>
-                        <input type="text" id="recipient" placeholder="Bob">
-                    </div>
-                    <div class="form-group">
-                        <label>Amount:</label>
-                        <input type="number" id="amount" placeholder="50" min="1">
-                    </div>
-                    <button class="btn btn-primary" onclick="addTransaction()">Add Transaction</button>
-                </div>
-
-                <div class="mining-section">
-                    <h2>Mine Block</h2>
-                    <div class="form-group">
-                        <label>Miner Address:</label>
-                        <input type="text" id="minerAddress" placeholder="Miner1">
-                    </div>
-                    <button class="btn btn-success" onclick="mineBlock()">Mine Block</button>
-                </div>
-
-                <div class="transactions-list">
-                    <h2>Pending Transactions</h2>
-                    <div id="pendingTransactions"></div>
-                </div>
-            </div>
-
-            <div id="blocks" class="tab-content">
-                <h1>Blocks</h1>
-                <div id="blocksContainer" class="blocks-container"></div>
-            </div>
-
-            <div id="wallets" class="tab-content">
-                <h1>Wallets</h1>
-                <div id="walletsContainer" class="wallets-container"></div>
-            </div>
-        </div>
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <div class="logo-block">
+      <span class="logo-bracket">[</span>
+      <span class="logo-text">BYTONIX</span>
+      <span class="logo-bracket">]</span>
     </div>
+    <div class="header-sub">BLOCKCHAIN PROOF-OF-WORK SYSTEM</div>
+  </div>
+  <div class="header-right">
+    <div class="status-row">
+      <span class="dot" id="serverDot"></span>
+      <span id="serverStatus">CONNECTING...</span>
+    </div>
+    <div class="chain-meta">
+      CHAIN: <span id="headerLength">0</span> BLOCKS &nbsp;|&nbsp;
+      DIFF: <span id="headerDiff">3</span> &nbsp;|&nbsp;
+      <span id="headerValid" class="valid-tag">VALID</span>
+    </div>
+  </div>
+</header>
 
-    <div id="toast" class="toast"></div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+<!-- TERMINAL TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker" id="ticker">
+    INITIALISING BLOCKCHAIN... SHA-256 READY... PoW ENGINE ONLINE... GENESIS BLOCK MINED...
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<main>
+
+  <!-- LEFT PANEL: Controls -->
+  <aside class="panel" id="controlPanel">
+
+    <!-- MINE -->
+    <section class="card" id="mineCard">
+      <div class="card-title"><span class="arrow">&#9658;</span> MINE NEW BLOCK</div>
+      <textarea id="mineInput" placeholder="Enter transaction data...&#10;e.g. Alice -> Bob : 2.5 BTC"></textarea>
+      <button class="btn btn-green" id="mineBtn" onclick="mineBlock()">
+        <span class="btn-icon">&#9935;</span> MINE BLOCK
+      </button>
+      <div class="mine-result hidden" id="mineResult"></div>
+    </section>
+
+    <!-- DIFFICULTY -->
+    <section class="card">
+      <div class="card-title"><span class="arrow">&#9658;</span> MINING DIFFICULTY</div>
+      <div class="diff-row">
+        <input type="range" id="diffSlider" min="1" max="6" value="3" oninput="updateDiffLabel(this.value)"/>
+        <span class="diff-label" id="diffLabel">3</span>
+        <span class="diff-target" id="diffTarget">000...</span>
+      </div>
+      <button class="btn btn-dim" onclick="setDifficulty()">APPLY DIFFICULTY</button>
+    </section>
+
+    <!-- VALIDATE -->
+    <section class="card">
+      <div class="card-title"><span class="arrow">&#9658;</span> CHAIN VALIDATION</div>
+      <button class="btn btn-blue" onclick="validateChain()">&#128269; VALIDATE CHAIN</button>
+      <div id="validateResult" class="validate-result hidden"></div>
+    </section>
+
+    <!-- TAMPER -->
+    <section class="card">
+      <div class="card-title"><span class="arrow">&#9658;</span> SIMULATE ATTACK</div>
+      <input type="number" id="tamperIndex" placeholder="Block index (not genesis)" min="1"/>
+      <input type="text" id="tamperData" placeholder="Fake data to inject"/>
+      <button class="btn btn-red" onclick="tamperBlock()">&#9888; TAMPER BLOCK</button>
+    </section>
+
+    <!-- ACTIONS -->
+    <section class="card">
+      <div class="card-title"><span class="arrow">&#9658;</span> QUICK ACTIONS</div>
+      <button class="btn btn-dim" onclick="runDemo()">&#128640; LOAD DEMO CHAIN</button>
+      <button class="btn btn-dim" style="margin-top:8px" onclick="resetChain()">&#8634; RESET BLOCKCHAIN</button>
+    </section>
+
+  </aside>
+
+  <!-- RIGHT PANEL: Chain Explorer -->
+  <section class="explorer">
+    <div class="explorer-header">
+      <div class="explorer-title">
+        <span class="arrow">&#9658;</span> BLOCK EXPLORER
+        <span class="block-count" id="blockCount">[ 0 BLOCKS ]</span>
+      </div>
+      <button class="btn-sm" onclick="refreshChain()">&#8635; REFRESH</button>
+    </div>
+    <div id="chainContainer" class="chain-container">
+      <div class="loading-msg">Connecting to node...</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MINING OVERLAY -->
+<div class="overlay hidden" id="miningOverlay">
+  <div class="overlay-box">
+    <div class="overlay-title">&#9935; MINING IN PROGRESS</div>
+    <div class="hash-display" id="overlayHash">Computing SHA-256...</div>
+    <div class="nonce-display">NONCE: <span id="overlayNonce">0</span></div>
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
